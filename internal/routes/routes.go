@@ -5,8 +5,8 @@ import (
 )
 
 func Routes(r *gin.Engine) {
-	v1 := r.Group("/api/v1")
-	{
-		TestRoutes(v1)
-	}
+	// v1 := r.Group("/api/v1")
+	// {
+	// 	TestRoutes(v1)
+	// }
 }

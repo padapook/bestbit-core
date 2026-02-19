@@ -4,13 +4,44 @@ import (
     "github.com/padapook/bestbit-core/internal/database"
     "github.com/padapook/bestbit-core/internal/routes"
     "github.com/gin-gonic/gin"
+
+    "github.com/joho/godotenv"
+    "github.com/gin-contrib/cors"
+
+    "log"
+    "os"
+    "time"
+
 )
 
 func main() {
-    database.InitDB()
+    if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
-    r := gin.Default()
-    routes.Routes(r)
+	if err := database.GormConnectDB(); err != nil {
+		log.Fatal("[postgres gorm] Error connecting to database:", err)
+	}
 
-    r.Run(":3000")
+	if err := database.AutoMigrate(database.GormDB); err != nil {
+		log.Fatal("[postgres gorm] Migration failed:", err)
+	}
+
+    app := gin.Default()
+
+    app.Use(cors.New(cors.Config{
+        AllowOrigins: []string{
+            "http://localhost:3000",
+            "http://localhost:8080",
+            "http://localhost:8081",
+        },
+        AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+        AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+        AllowCredentials: true,
+        MaxAge:           12 * time.Hour,
+    }))
+
+    routes.Routes(app)
+
+    app.Run(":" + os.Getenv("PORT"))
 }
