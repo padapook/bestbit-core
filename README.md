@@ -1,5 +1,20 @@
 # BestBit-Core (Backend)
 
+### Project Description
+BestBit-Core คือระบบฝั่ง Backend ที่เขียนขึ้นมาเพื่อศึกษาการทำงานของระบบ Digital Asset Trading Platform
+
+1. Financial Precision: ใช้การคำนวณทศนิยม 16 หลัก เพื่อรองรับทุก currency และป้องกัน Rounding errors
+2. High Concurrency: ออกแบบ Architech มาเพื่อรองรับคำสั่งซื้อขาย (Orders) จำนวนมากพร้อมกัน โดยใช้ระบบ Hybrid ระหว่าง GORM และ pgxpool เพื่อ performance สูงสุดจาก Database
+3. System Integrity: ระบบ Lock เงิน (Amount Locked) และ Transactional Integrity เพื่อป้องกันปัญหา Double-spending และรักษาความถูกต้องของยอดเงิน
+
+### Key Objectives
+- Wallet System: จัดการยอดเงิน (Available/Locked) ของ User
+- Order Management: ระบบวางคำสั่งซื้อขายแบบ Real-time (Limit/Market Order)
+- Matching Engine Integration: เตรียมความพร้อมสำหรับการเชื่อมต่อกับระบบจับคู่คำสั่งซื้อขาย
+- Auditability: คำสั่งซื้อขายต้องสามารถตรวจสอบย้อนกลับได้ทั้งหมด
+
+---
+
 ## Project Structure (Modular Monolith)
 - cmd/server/main.go → Entry point ของระบบและการตั้งค่า Middleware
 - internal/database/ → จัดการ GormConnectDB และ AutoMigrate
@@ -17,6 +32,7 @@
 ### Performance & Scalability Layers
 - In-Memory Cache: Redis
 - Message Broker: RabbitMQ
+- WebSocket
 - Distributed Locking
 
 ### Financial Standards
