@@ -19,5 +19,8 @@ func RegisterWalletRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	{
 		walletRoutes.GET("/", walletCtrl.GetWallets)
 		walletRoutes.GET("/:currency", walletCtrl.GetWalletByCurrency)
+		walletRoutes.POST("/deposit", walletCtrl.Deposit)
+		walletRoutes.POST("/withdraw", walletCtrl.Withdraw)
+		walletRoutes.POST("/transfer", walletCtrl.Transfer)
 	}
 }
