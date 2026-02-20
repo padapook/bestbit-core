@@ -7,7 +7,7 @@ import (
 	"github.com/padapook/bestbit-core/internal/account/model"
 	"github.com/padapook/bestbit-core/internal/account/service"
 	"github.com/padapook/bestbit-core/internal/utils/auth"
-	"log"
+	// "log"
 )
 
 type UserController interface {
@@ -125,7 +125,7 @@ func (ctrl *userController) Login(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid username or password"})
 		return
 	}
-	log.Println("'user",user)
+	// log.Println("'user",user)
 
 	tokens, err := auth.GenerateTokens(user)
 	if err != nil {

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	// "log"
 
 	"github.com/google/uuid"
 
@@ -91,7 +92,9 @@ func (s *userService) Login(username, password string) (*accountModel.User, erro
 }
 
 func (s *userService) LoginByShareToken(token string) (*accountModel.User, error) {
+	// log.Println("'token",token)
 	claims, err := auth.ValidateShareToken(token)
+	// log.Println("'claims",claims)
 	if err != nil {
 		return nil, errors.New("invalid or expired share token")
 	}

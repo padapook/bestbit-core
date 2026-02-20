@@ -5,6 +5,7 @@ import (
 	"github.com/padapook/bestbit-core/internal/account/controller"
 	"github.com/padapook/bestbit-core/internal/account/repository"
 	"github.com/padapook/bestbit-core/internal/account/service"
+	"github.com/padapook/bestbit-core/internal/middleware"
 	"gorm.io/gorm"
 )
 
@@ -13,13 +14,18 @@ func RegisterUserRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	userSvc := service.NewUserService(userRepo, db)
 	userCtrl := controller.NewUserController(userSvc)
 
-	userRoutes := router.Group("/user")
+	userRoutes := router.Group("")
 	{
-		userRoutes.POST("/register", userCtrl.Register)
+		userRoutes.POST("/user/register", userCtrl.Register)
 		userRoutes.POST("/login", userCtrl.Login)
-		userRoutes.POST("/logout", userCtrl.Logout)
 		userRoutes.POST("/login/share-token", userCtrl.LoginByShareToken)
-		userRoutes.POST("/share-token", userCtrl.GenerateShareToken)
-		userRoutes.GET("/:username", userCtrl.GetProfile)
+	}
+
+	protectedUserRoutes := router.Group("/user")
+	protectedUserRoutes.Use(middleware.AuthMiddleware())
+	{
+		protectedUserRoutes.POST("/logout", userCtrl.Logout)
+		protectedUserRoutes.POST("/share-token", userCtrl.GenerateShareToken)
+		protectedUserRoutes.GET("/:username", userCtrl.GetProfile)
 	}
 }
