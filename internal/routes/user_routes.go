@@ -14,18 +14,18 @@ func RegisterUserRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	userSvc := service.NewUserService(userRepo, db)
 	userCtrl := controller.NewUserController(userSvc)
 
-	userRoutes := router.Group("")
+	publicUserRoutes := router.Group("")
 	{
-		userRoutes.POST("/user/register", userCtrl.Register)
-		userRoutes.POST("/login", userCtrl.Login)
-		userRoutes.POST("/login/share-token", userCtrl.LoginByShareToken)
+		publicUserRoutes.POST("/user/register", userCtrl.Register)
+		publicUserRoutes.POST("/login", userCtrl.Login)
+		publicUserRoutes.POST("/login/share-token", userCtrl.LoginByShareToken)
 	}
 
-	protectedUserRoutes := router.Group("/user")
-	protectedUserRoutes.Use(middleware.AuthMiddleware())
+	userRoutes := router.Group("/user")
+	userRoutes.Use(middleware.AuthMiddleware())
 	{
-		protectedUserRoutes.POST("/logout", userCtrl.Logout)
-		protectedUserRoutes.POST("/share-token", userCtrl.GenerateShareToken)
-		protectedUserRoutes.GET("/:username", userCtrl.GetProfile)
+		userRoutes.POST("/logout", userCtrl.Logout)
+		userRoutes.POST("/share-token", userCtrl.GenerateShareToken)
+		userRoutes.GET("/:username", userCtrl.GetProfile)
 	}
 }
