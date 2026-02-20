@@ -18,10 +18,10 @@ BestBit-Core คือระบบฝั่ง Backend ที่เขียน�
 ## Project Structure (Modular Monolith)
 - cmd/server/main.go → Entry point ของระบบและการตั้งค่า Middleware
 - internal/database/ → จัดการ GormConnectDB และ AutoMigrate
-- internal/account/model/ → ข้อมูล User และ Profile (Singular naming)
-- internal/wallet/model/ → ข้อมูล Balance, Locked และ Transaction
-- internal/order/model/ → ข้อมูล Limit/Market Orders
-- internal/trade/model/ → ข้อมูลการจับคู่ซื้อขาย (Match results)
+- internal/account/.../ → ข้อมูล User และ Profile (Singular naming)
+- internal/wallet/.../ → ข้อมูล Balance, Locked และ Transaction
+- internal/order/.../ → ข้อมูล Limit/Market Orders
+- internal/trade/.../ → ข้อมูลการจับคู่ซื้อขาย (Match results)
 - internal/routes/ → จัดการ Route Grouping (v1/api/...)
 
 ## Tech Specification
