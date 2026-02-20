@@ -2,12 +2,12 @@ package database
 
 import (
 	accountModel "github.com/padapook/bestbit-core/internal/account/model"
-	walletModel "github.com/padapook/bestbit-core/internal/wallet/model"
 	orderModel "github.com/padapook/bestbit-core/internal/order/model"
 	tradeModel "github.com/padapook/bestbit-core/internal/trade/model"
+	walletModel "github.com/padapook/bestbit-core/internal/wallet/model"
 
-	"log"
 	"gorm.io/gorm"
+	"log"
 )
 
 func AutoMigrate(db *gorm.DB) error {
@@ -27,7 +27,7 @@ func AutoMigrate(db *gorm.DB) error {
 		// trade
 		&tradeModel.Trade{},
 	)
-	
+
 	if err != nil {
 		log.Println("'พัง")
 		return err
