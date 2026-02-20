@@ -6,11 +6,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/padapook/bestbit-core/internal/account/model"
 	"github.com/padapook/bestbit-core/internal/account/service"
+	"github.com/padapook/bestbit-core/internal/utils/auth"
+	// "log"
 )
 
 type UserController interface {
 	Register(c *gin.Context)
 	GetProfile(c *gin.Context)
+	Login(c *gin.Context)
+	Logout(c *gin.Context)
+	LoginByShareToken(c *gin.Context)
+	GenerateShareToken(c *gin.Context)
 }
 
 type userController struct {
@@ -29,8 +35,22 @@ type UserRegisterRequest struct {
 	LastName  string `json:"last_name" binding:"required"`
 }
 
+type LoginRequest struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
+type LoginByShareTokenRequest struct {
+	Token string `json:"token" binding:"required"`
+}
+
+type LoginResponse struct {
+	AccessToken  string       `json:"access_token"`
+	RefreshToken string       `json:"refresh_token"`
+	User         UserResponse `json:"user"`
+}
+
 type UserResponse struct {
-	UID       uint64 `json:"uid"`
 	AccountID string `json:"account_id"`
 	Username  string `json:"username"`
 	Email     string `json:"email"`
@@ -40,7 +60,6 @@ type UserResponse struct {
 
 func toUserResponse(user *model.User) UserResponse {
 	return UserResponse{
-		UID:       user.ID,
 		AccountID: user.AccountId,
 		Username:  user.Username,
 		Email:     user.Email,
@@ -91,5 +110,98 @@ func (ctrl *userController) GetProfile(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"data": toUserResponse(user),
+	})
+}
+
+func (ctrl *userController) Login(c *gin.Context) {
+	var req LoginRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	user, err := ctrl.userService.Login(req.Username, req.Password)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid username or password"})
+		return
+	}
+	// log.Println("'user",user)
+
+	tokens, err := auth.GenerateTokens(user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate tokens"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Login successful",
+		"data": LoginResponse{
+			AccessToken:  tokens.AccessToken,
+			RefreshToken: tokens.RefreshToken,
+			User:         toUserResponse(user),
+		},
+	})
+}
+
+func (ctrl *userController) Logout(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Logged out successfully",
+	})
+}
+
+func (ctrl *userController) LoginByShareToken(c *gin.Context) {
+	var req LoginByShareTokenRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	user, err := ctrl.userService.LoginByShareToken(req.Token)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	tokens, err := auth.GenerateTokens(user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate session tokens"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Logged in via share token successfully",
+		"data": LoginResponse{
+			AccessToken:  tokens.AccessToken,
+			RefreshToken: tokens.RefreshToken,
+			User:         toUserResponse(user),
+		},
+	})
+}
+
+func (ctrl *userController) GenerateShareToken(c *gin.Context) {
+	username, exists := c.Get("username")
+	if !exists {
+		username = c.Query("username")
+		if username == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+			return
+		}
+	}
+
+	user, err := ctrl.userService.GetByUsername(username.(string))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	shareTokenString, err := auth.GenerateShareToken(user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate share token"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":     "Share token generated successfully",
+		"share_token": shareTokenString,
 	})
 }
