@@ -57,7 +57,7 @@ func (s *userService) Register(ctx context.Context, user accountModel.User) (*ac
 		}
 
 		newWallet := &walletModel.Wallet{
-			UserID:   user.ID,
+			UserID:   user.AccountId,
 			Currency: "THB",
 			Balance:  decimal.NewFromInt(0),
 		}
