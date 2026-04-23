@@ -41,7 +41,7 @@ func main() {
         MaxAge:           12 * time.Hour,
     }))
 
-    routes.Routes(app)
+    routes.Routes(app, database.GormDB)
 
     app.Run(":" + os.Getenv("PORT"))
 }

@@ -11,7 +11,7 @@ import (
 )
 
 func AutoMigrate(db *gorm.DB) error {
-	log.Println("เข้า migrate")
+	// log.Println("เข้า migrate")
 
 	err := db.AutoMigrate(
 		// account
