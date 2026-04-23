@@ -117,7 +117,7 @@ func (ctrl *userController) GetProfile(c *gin.Context) {
 func (ctrl *userController) Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		utils.HandleError(c, utils.ErrInvalidRequest)
 		return
 	}
 
