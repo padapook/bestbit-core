@@ -9,7 +9,7 @@ import (
 
 	accountModel "github.com/padapook/bestbit-core/internal/account/model"
 	"github.com/padapook/bestbit-core/internal/account/repository"
-	"github.com/padapook/bestbit-core/internal/utils"
+	"github.com/padapook/bestbit-core/internal/utils/crypto"
 	"github.com/padapook/bestbit-core/internal/utils/auth"
 	"gorm.io/gorm"
 
@@ -36,7 +36,7 @@ func NewUserService(repo repository.UserRepository, db *gorm.DB) UserService {
 
 func (s *userService) Register(ctx context.Context, user accountModel.User) (*accountModel.User, error) {
 	// pwhashed, err := bcrypt.GenerateFromPassword([]byte(user.Password), 12)
-	pwhashed, err := utils.HashPassword(user.Password)
+	pwhashed, err := crypto.HashPassword(user.Password)
 	if err != nil {
 		return nil, errors.New("failed to hash password")
 	}
@@ -83,7 +83,7 @@ func (s *userService) Login(username, password string) (*accountModel.User, erro
 		return nil, errors.New("invalid username or password")
 	}
 
-	match, err := utils.ComparePasswordAndHash(password, user.Password)
+	match, err := crypto.ComparePasswordAndHash(password, user.Password)
 	if err != nil || !match {
 		return nil, errors.New("invalid username or password")
 	}

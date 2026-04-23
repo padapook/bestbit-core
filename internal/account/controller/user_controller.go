@@ -6,8 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/padapook/bestbit-core/internal/account/model"
 	"github.com/padapook/bestbit-core/internal/account/service"
+	
+	"github.com/padapook/bestbit-core/internal/utils"
 	"github.com/padapook/bestbit-core/internal/utils/auth"
-	// "log"
 )
 
 type UserController interface {
@@ -71,7 +72,7 @@ func toUserResponse(user *model.User) UserResponse {
 func (ctrl *userController) Register(c *gin.Context) {
 	var req UserRegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		utils.HandleError(c, utils.ErrInvalidRequest)
 		return
 	}
 
@@ -116,7 +117,7 @@ func (ctrl *userController) GetProfile(c *gin.Context) {
 func (ctrl *userController) Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		utils.HandleError(c, utils.ErrInvalidRequest)
 		return
 	}
 

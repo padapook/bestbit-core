@@ -65,7 +65,7 @@ func (r *walletRepository) Deposit(userID, currency string, amount decimal.Decim
 			return err
 		}
 
-		trx := model.Transaction{
+		trx := model.WalletTransaction{
 			WalletID:        wallet.ID,
 			ReferenceID:     referenceID,
 			TransactionType: "DEPOSIT",
@@ -117,7 +117,7 @@ func (r *walletRepository) Withdraw(userID, currency string, amount decimal.Deci
 			return err
 		}
 
-		trx := model.Transaction{
+		trx := model.WalletTransaction{
 			WalletID:        wallet.ID,
 			ReferenceID:     referenceID,
 			TransactionType: "WITHDRAW",
@@ -192,7 +192,7 @@ func (r *walletRepository) Transfer(fromUserID, toUserID, currency string, amoun
 		}
 
 		// tx ฝั่ง sender
-		txSender := model.Transaction{
+		txSender := model.WalletTransaction{
 			WalletID:        senderWallet.ID,
 			ReferenceID:     referenceID,
 			TransactionType: "TRANSFER_OUT",
@@ -209,7 +209,7 @@ func (r *walletRepository) Transfer(fromUserID, toUserID, currency string, amoun
 		}
 
 		// tx ฝั่ง receive
-		txReceiver := model.Transaction{
+		txReceiver := model.WalletTransaction{
 			WalletID:        receiverWallet.ID,
 			ReferenceID:     referenceID,
 			TransactionType: "TRANSFER_IN",
